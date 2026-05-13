@@ -11,10 +11,8 @@
 #include "backends/imgui_impl_dx10.h"
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_dx12.h"
-#include "backends/imgui_impl_vulkan.h"
 #include "backends/imgui_impl_opengl3.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_sdl2.h"
+// NOTE: Vulkan, GLFW, SDL2 excluded to avoid external dependencies in CI
 #endif
 
 #include "imgui_c_api.h"

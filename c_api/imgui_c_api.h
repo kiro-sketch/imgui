@@ -345,17 +345,6 @@ IMGUI_C_API_EXPORT void ImGui_ImplDX12_InvalidateDeviceObjects(void);
 IMGUI_C_API_EXPORT ImGuiBool ImGui_ImplDX12_CreateDeviceObjects(void);
 #endif
 
-// Vulkan Backend (Windows)
-#ifdef _WIN32
-IMGUI_C_API_EXPORT ImGuiBool ImGui_ImplVulkan_Init(void* init_info);
-IMGUI_C_API_EXPORT void ImGui_ImplVulkan_Shutdown(void);
-IMGUI_C_API_EXPORT void ImGui_ImplVulkan_NewFrame(void);
-IMGUI_C_API_EXPORT void ImGui_ImplVulkan_RenderDrawData(void* draw_data, void* command_buffer);
-IMGUI_C_API_EXPORT ImGuiBool ImGui_ImplVulkan_CreateFontsTexture(void);
-IMGUI_C_API_EXPORT void ImGui_ImplVulkan_DestroyFontUploadObjects(void);
-IMGUI_C_API_EXPORT void ImGui_ImplVulkan_SetMinImageCount(uint32_t min_image_count);
-#endif
-
 // OpenGL 3 Backend (Windows)
 #ifdef _WIN32
 IMGUI_C_API_EXPORT ImGuiBool ImGui_ImplOpenGL3_Init(const char* glsl_version);
@@ -366,6 +355,21 @@ IMGUI_C_API_EXPORT ImGuiBool ImGui_ImplOpenGL3_CreateFontsTexture(void);
 IMGUI_C_API_EXPORT void ImGui_ImplOpenGL3_DestroyFontsTexture(void);
 IMGUI_C_API_EXPORT ImGuiBool ImGui_ImplOpenGL3_CreateDeviceObjects(void);
 IMGUI_C_API_EXPORT void ImGui_ImplOpenGL3_DestroyDeviceObjects(void);
+#endif
+
+// NOTE: Vulkan, GLFW, SDL2 backends excluded to avoid external dependencies in CI
+// If you need these, install the corresponding SDKs and uncomment the code below
+
+/*
+// Vulkan Backend (Windows)
+#ifdef _WIN32
+IMGUI_C_API_EXPORT ImGuiBool ImGui_ImplVulkan_Init(void* init_info);
+IMGUI_C_API_EXPORT void ImGui_ImplVulkan_Shutdown(void);
+IMGUI_C_API_EXPORT void ImGui_ImplVulkan_NewFrame(void);
+IMGUI_C_API_EXPORT void ImGui_ImplVulkan_RenderDrawData(void* draw_data, void* command_buffer);
+IMGUI_C_API_EXPORT ImGuiBool ImGui_ImplVulkan_CreateFontsTexture(void);
+IMGUI_C_API_EXPORT void ImGui_ImplVulkan_DestroyFontUploadObjects(void);
+IMGUI_C_API_EXPORT void ImGui_ImplVulkan_SetMinImageCount(uint32_t min_image_count);
 #endif
 
 // GLFW Backend (Windows)
@@ -385,6 +389,7 @@ IMGUI_C_API_EXPORT ImGuiBool ImGui_ImplSDL2_InitForVulkan(void* window);
 IMGUI_C_API_EXPORT void ImGui_ImplSDL2_Shutdown(void);
 IMGUI_C_API_EXPORT void ImGui_ImplSDL2_NewFrame(void);
 #endif
+*/
 
 // ============================================================================
 // Version Information
