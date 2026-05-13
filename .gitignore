@@ -1,71 +1,46 @@
 ```
-# Build artifacts
+# Compiled and build artifacts
 *.o
 *.obj
-*.a
-*.lib
+*.out
 *.dll
 *.so
-*.dylib
-*.exe
-*.out
-
-# CMake build directories
-build/
-cmake-build-*/
-_CacheData/
+*.a
+*.class
+*.pyc
+__pycache__/
 
 # Dependencies
 node_modules/
-vendor/
+venv/
+.venv/
+.env
+.env.local
+*.env.*
 
-# IDE files
+# Build directories
+build/
+dist/
+target/
+.gradle/
+.mypy_cache/
+.pytest_cache/
+coverage/
+htmlcov/
+
+# Editors and IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*.temp
-
-# OS files
+# System files
 .DS_Store
 Thumbs.db
+*.log
+*.tmp
 
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# Python cache (if present)
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Environment files
-.env
-.env.local
-*.env.*
-
-# MyPy cache
-.mypy_cache/
-
-# Pytest cache
-.pytest_cache/
-
-# Distribution artifacts
-dist/
-target/
-
-# Gradle
-.gradle/
-
-# Compressed archives
+# Compression and archives
 *.zip
 *.gz
 *.tar

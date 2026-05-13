@@ -39,7 +39,7 @@ extern "C" void igSetMouseDown(int button, bool down) {
 }
 
 extern "C" void igSetKey(int key, bool down) {
-    ImGui::GetIO().KeysDown[key] = down;
+    ImGui::GetIO().AddKeyEvent((ImGuiKey)key, down);
 }
 
 extern "C" void igAddInputCharacter(unsigned int c) {
