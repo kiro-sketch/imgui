@@ -25,7 +25,6 @@ BOOL APIENTRY DllMain(HMODULE hModule,
         {
             // Очистка ресурсов и отцепление хуков
             NsUnload();
-            UnloadInjectDlls(g_InjectDlls);
         }
             break;
     }
