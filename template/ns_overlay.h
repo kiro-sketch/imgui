@@ -19,7 +19,7 @@ enum class RenderType {
 };
 
 // Инициализация библиотеки (вызывается из DllMain)
-bool NsLoad();
+BOOL NsLoad();
 
 // Очистка при выгрузке
 void NsUnload();

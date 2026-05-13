@@ -133,7 +133,7 @@ static bool HookDirectX9() {
 
     if (SUCCEEDED(hr) && pDevice) {
         // Получаем VTable
-        DWORD* pVTable = *(DWORD**)pDevice;
+        void** pVTable = *(void***)pDevice;
         
         // EndScene имеет индекс 42
         HookVTableMethod(pVTable, 42, (void*)hk_D3D9_EndScene, (void**)&o_D3D9_EndScene);
@@ -214,7 +214,7 @@ static bool HookDirectX10() {
 
     if (SUCCEEDED(pD3D10CreateDeviceAndSwapChain(pAdapter, D3D10_DRIVER_TYPE_HARDWARE, NULL, 0, D3D10_SDK_VERSION, &sd, &pDevice, &pSwapChain))) {
         // Получаем VTable свопчейна
-        DWORD* pVTable = *(DWORD**)pSwapChain;
+        void** pVTable = *(void***)pSwapChain;
         
         // Present имеет индекс 8
         HookVTableMethod(pVTable, 8, (void*)hk_D3D10_Present, (void**)&o_D3D10_Present);
@@ -296,7 +296,7 @@ static bool HookDirectX11() {
     D3D_FEATURE_LEVEL featureLevel;
 
     if (SUCCEEDED(pD3D11CreateDeviceAndSwapChain(pAdapter, D3D_DRIVER_TYPE_UNKNOWN, NULL, 0, NULL, 0, D3D11_SDK_VERSION, &sd, &pSwapChain, &pDevice, &featureLevel, &pContext))) {
-        DWORD* pVTable = *(DWORD**)pSwapChain;
+        void** pVTable = *(void***)pSwapChain;
         
         // Present имеет индекс 8
         HookVTableMethod(pVTable, 8, (void*)hk_D3D11_Present, (void**)&o_D3D11_Present);
@@ -349,26 +349,26 @@ bool NsLoad() {
     g_currentRenderType = DetectRenderType();
     
     if (g_currentRenderType == RenderType::Unknown) {
-        return false; // Рендер не найден
+        return FALSE; // Рендер не найден
     }
 
-    bool hookResult = false;
+    BOOL hookResult = FALSE;
     
     switch (g_currentRenderType) {
         case RenderType::DirectX9:
-            hookResult = HookDirectX9();
+            hookResult = HookDirectX9() ? TRUE : FALSE;
             break;
         case RenderType::DirectX10:
-            hookResult = HookDirectX10();
+            hookResult = HookDirectX10() ? TRUE : FALSE;
             break;
         case RenderType::DirectX11:
-            hookResult = HookDirectX11();
+            hookResult = HookDirectX11() ? TRUE : FALSE;
             break;
         case RenderType::DirectX12:
-            hookResult = HookDirectX12();
+            hookResult = HookDirectX12() ? TRUE : FALSE;
             break;
         case RenderType::OpenGL:
-            hookResult = HookOpenGL();
+            hookResult = HookOpenGL() ? TRUE : FALSE;
             break;
         default:
             break;

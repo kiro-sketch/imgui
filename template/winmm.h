@@ -12,3 +12,5 @@ BOOL NsLoad();
 
 // Функция выгрузки инжектированных DLL (опционально)
 void UnloadInjectDlls(std::vector<HMODULE>& dlls);
+
+#endif // WINMM_H
