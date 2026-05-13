@@ -1,0 +1,76 @@
+name: Build ImGui Release (Windows)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-windows-release:
+    name: Build Windows Static Library
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+        
+    - name: Create build directory
+      shell: cmd
+      run: |
+        mkdir build
+        cd build
+        
+    - name: Configure CMake
+      shell: cmd
+      run: |
+        cmake -B build ^
+          -S . ^
+          -G "Visual Studio 17 2022" ^
+          -A x64 ^
+          -DCMAKE_BUILD_TYPE=Release ^
+          -DBUILD_SHARED_LIBS=OFF
+          
+    - name: Build ImGui Core
+      shell: cmd
+      run: |
+        cmake --build build --config Release --target imgui
+        
+    - name: Build C API
+      shell: cmd
+      run: |
+        cl /c /O2 /I. /Ibackends c_api/imgui_c_api.cpp /Fobuild/imgui_c_api.obj
+        lib /OUT:build/imgui.lib build/imgui_c_api.obj
+        
+    - name: Create release package
+      shell: bash
+      run: |
+        mkdir -p release/include
+        mkdir -p release/lib
+        cp c_api/imgui_c_api.h release/include/
+        cp imgui.h release/include/
+        cp imconfig.h release/include/
+        cp imgui_internal.h release/include/
+        cp backends/*.h release/include/
+        cp build/imgui.lib release/lib/
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: imgui-windows-static-lib
+        path: release/
+        retention-days: 30
+        
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release/**
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

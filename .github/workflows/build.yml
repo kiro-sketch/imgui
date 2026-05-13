@@ -754,6 +754,60 @@ jobs:
       working-directory: ${{ github.workspace }}/imgui_test_engine/imgui_test_suite
       run: ./imgui_test_suite -nogui -nopause -v2 -ve4 -viewport-mock viewport
 
+  Build-Release-Libs:
+    runs-on: ubuntu-latest
+    name: Build - Release Static Libraries
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/imgui
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        path: ${{ github.workspace }}/imgui
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libglfw3-dev libsdl2-dev gcc-multilib g++-multilib libfreetype6-dev libvulkan-dev
+
+    - name: Build imgui static library (64-bit)
+      run: |
+        g++ -c -O2 -fPIC -I. imgui.cpp imgui_draw.cpp imgui_widgets.cpp imgui_tables.cpp imgui_demo.cpp
+        ar rcs libimgui.a *.o
+        rm -f *.o
+
+    - name: Build imgui static library (32-bit)
+      run: |
+        g++ -c -O2 -fPIC -m32 -I. imgui.cpp imgui_draw.cpp imgui_widgets.cpp imgui_tables.cpp imgui_demo.cpp
+        ar rcs libimgui_32.a *.o
+        rm -f *.o
+
+    - name: Build C API wrapper static library (64-bit)
+      run: |
+        g++ -c -O2 -fPIC -I. -Imisc/c misc/c/imgui_c_api.cpp
+        ar rcs libimgui_c_api.a imgui_c_api.o
+        rm -f *.o
+
+    - name: Build C API wrapper static library (32-bit)
+      run: |
+        g++ -c -O2 -fPIC -m32 -I. -Imisc/c misc/c/imgui_c_api.cpp
+        ar rcs libimgui_c_api_32.a imgui_c_api.o
+        rm -f *.o
+
+    - name: Upload Release Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: imgui-static-libs-${{ github.sha }}
+        path: |
+          ${{ github.workspace }}/imgui/libimgui.a
+          ${{ github.workspace }}/imgui/libimgui_32.a
+          ${{ github.workspace }}/imgui/libimgui_c_api.a
+          ${{ github.workspace }}/imgui/libimgui_c_api_32.a
+          ${{ github.workspace }}/imgui/imgui.h
+          ${{ github.workspace }}/imgui/imconfig.h
+          ${{ github.workspace }}/imgui/misc/c/imgui_c_api.h
+          ${{ github.workspace }}/imgui/misc/c/README.txt
+
 #  Test-MacOS:
 #    runs-on: macos-latest
 #    name: Test - MacOS
