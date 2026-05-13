@@ -91,14 +91,14 @@ int APIENTRY hk_wglSwapBuffers(HDC hdc) {
 }
 
 // Вспомогательная функция для безопасной подмены указателя в VTable
-static bool HookVTableMethod(DWORD* pVTable, int index, void* pNewFunc, void** pOriginalFunc) {
+static bool HookVTableMethod(void** pVTable, int index, void* pNewFunc, void** pOriginalFunc) {
     if (!pVTable || !pNewFunc || !pOriginalFunc) return false;
     
     DWORD oldProtect;
     // Разрешаем запись в страницу памяти с VTable
     if (VirtualProtect(&pVTable[index], sizeof(void*), PAGE_READWRITE, &oldProtect)) {
-        *pOriginalFunc = (void*)pVTable[index]; // Сохраняем оригинальный указатель
-        pVTable[index] = (DWORD)pNewFunc;       // Подменяем на наш хук
+        *pOriginalFunc = pVTable[index]; // Сохраняем оригинальный указатель
+        pVTable[index] = pNewFunc;       // Подменяем на наш хук
         VirtualProtect(&pVTable[index], sizeof(void*), oldProtect, &oldProtect);
         FlushInstructionCache(GetCurrentProcess(), &pVTable[index], sizeof(void*));
         return true;
