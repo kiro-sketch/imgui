@@ -28,7 +28,7 @@ set(IMGUI_HEADERS
     imstb_truetype.h
 )
 
-# Бекенды Windows
+# Бекенды Windows - только те, что не требуют внешних зависимостей
 if(WIN32)
     list(APPEND IMGUI_SOURCES
         backends/imgui_impl_win32.cpp
@@ -36,10 +36,7 @@ if(WIN32)
         backends/imgui_impl_dx10.cpp
         backends/imgui_impl_dx11.cpp
         backends/imgui_impl_dx12.cpp
-        backends/imgui_impl_vulkan.cpp
         backends/imgui_impl_opengl3.cpp
-        backends/imgui_impl_glfw.cpp
-        backends/imgui_impl_sdl2.cpp
     )
     
     list(APPEND IMGUI_HEADERS
@@ -48,11 +45,8 @@ if(WIN32)
         backends/imgui_impl_dx10.h
         backends/imgui_impl_dx11.h
         backends/imgui_impl_dx12.h
-        backends/imgui_impl_vulkan.h
         backends/imgui_impl_opengl3.h
         backends/imgui_impl_opengl3_loader.h
-        backends/imgui_impl_glfw.h
-        backends/imgui_impl_sdl2.h
     )
 endif()
 
