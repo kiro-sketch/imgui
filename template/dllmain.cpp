@@ -1,8 +1,5 @@
 #include "winmm.h"
 
-std::vector<HMODULE> g_InjectDlls{};
-HMODULE g_hCurrentModule = NULL;
-
 BOOL APIENTRY DllMain(HMODULE hModule,
     DWORD  ul_reason_for_call,
     LPVOID lpReserved)
@@ -14,7 +11,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
             g_hCurrentModule = hModule;
             DisableThreadLibraryCalls(hModule);
             
-            // TODO: Инициализация вашей библиотеки
+            // Инициализация библиотеки с авто-определением рендера
             if (!NsLoad())
                 return FALSE;
         }
@@ -25,8 +22,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
             break;
         case DLL_PROCESS_DETACH:
         {
-            // TODO: Очистка ресурсов
-            // UnloadInjectDlls(g_InjectDlls);
+            // Очистка ресурсов и отцепление хуков
+            NsUnload();
+            UnloadInjectDlls(g_InjectDlls);
         }
             break;
     }
