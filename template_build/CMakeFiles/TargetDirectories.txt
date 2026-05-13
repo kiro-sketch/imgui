@@ -1,0 +1,3 @@
+/workspace/template_build/CMakeFiles/MyInjectLibrary.dir
+/workspace/template_build/CMakeFiles/edit_cache.dir
+/workspace/template_build/CMakeFiles/rebuild_cache.dir

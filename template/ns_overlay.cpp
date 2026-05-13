@@ -345,7 +345,7 @@ static bool HookOpenGL() {
 // Основные функции
 // ==========================================
 
-bool NsLoad() {
+BOOL NsLoad() {
     g_currentRenderType = DetectRenderType();
     
     if (g_currentRenderType == RenderType::Unknown) {

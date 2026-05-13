@@ -141,14 +141,22 @@ if(IMGUI_BUILD_C_API AND WIN32)
 endif()
 
 # Установка файлов
-install(TARGETS imgui imgui_c_api ns_render_api
+install(TARGETS imgui
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
 )
 
+if(IMGUI_BUILD_C_API AND WIN32)
+    install(TARGETS imgui_c_api ns_render_api
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+    )
+    install(FILES ${IMGUI_C_API_HEADERS} DESTINATION include/imgui)
+endif()
+
 install(FILES ${IMGUI_HEADERS} DESTINATION include/imgui)
-install(FILES ${IMGUI_C_API_HEADERS} DESTINATION include/imgui)
 install(FILES ${NS_RENDER_API_HEADERS} DESTINATION include/ns_render)
 
 # Вывод информации о сборке
