@@ -87,7 +87,7 @@ if(WIN32)
     )
 endif()
 
-# C API Wrapper
+# C API Wrapper и NS Render API
 if(IMGUI_BUILD_C_API AND WIN32)
     set(IMGUI_C_API_SOURCES
         c_api/imgui_c_api.cpp
@@ -114,10 +114,40 @@ if(IMGUI_BUILD_C_API AND WIN32)
         UNICODE
         _UNICODE
     )
+
+    # NS Render API - обёртка для C# с автодетектом рендерера
+    set(NS_RENDER_API_SOURCES
+        src/ns_render_api.cpp
+        src/renderer_detector.cpp
+    )
+    
+    set(NS_RENDER_API_HEADERS
+        src/ns_render_api.h
+        src/renderer_detector.h
+    )
+    
+    add_library(ns_render_api SHARED ${NS_RENDER_API_SOURCES} ${NS_RENDER_API_HEADERS})
+    
+    target_include_directories(ns_render_api PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends
+        ${CMAKE_CURRENT_SOURCE_DIR}/c_api
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+    )
+    
+    target_link_libraries(ns_render_api PUBLIC imgui_c_api)
+    
+    target_compile_definitions(ns_render_api PUBLIC
+        _WIN32_WINNT=0x0A00
+        WINVER=0x0A00
+        NOMINMAX
+        UNICODE
+        _UNICODE
+    )
 endif()
 
 # Установка файлов
-install(TARGETS imgui imgui_c_api
+install(TARGETS imgui imgui_c_api ns_render_api
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
@@ -125,6 +155,7 @@ install(TARGETS imgui imgui_c_api
 
 install(FILES ${IMGUI_HEADERS} DESTINATION include/imgui)
 install(FILES ${IMGUI_C_API_HEADERS} DESTINATION include/imgui)
+install(FILES ${NS_RENDER_API_HEADERS} DESTINATION include/ns_render)
 
 # Вывод информации о сборке
 message(STATUS "ImGui version: ${PROJECT_VERSION}")
