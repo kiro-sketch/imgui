@@ -4,7 +4,6 @@
 #include <d3d11.h>
 #include <dxgi.h>
 #include <gl/GL.h>
-#include <vulkan/vulkan.h>
 #include <detours/detours.h>
 
 // Глобальные переменные
@@ -19,7 +18,6 @@ static bool g_d3d10Hooked = false;
 static bool g_d3d11Hooked = false;
 static bool g_d3d12Hooked = false;
 static bool g_glHooked = false;
-static bool g_vkHooked = false;
 
 // ==========================================
 // Обнаружение рендера
@@ -48,11 +46,6 @@ static RenderType DetectRenderType() {
     // Проверка OpenGL
     if (GetModuleHandleA("opengl32.dll")) {
         return RenderType::OpenGL;
-    }
-    
-    // Проверка Vulkan
-    if (GetModuleHandleA("vulkan-1.dll")) {
-        return RenderType::Vulkan;
     }
     
     return RenderType::Unknown;
@@ -106,15 +99,6 @@ static wglSwapBuffers_t o_wglSwapBuffers = nullptr;
 int APIENTRY hk_wglSwapBuffers(HDC hdc) {
     // Хук для OpenGL
     return o_wglSwapBuffers(hdc);
-}
-
-// --- Vulkan ---
-typedef VkResult (APIENTRY *vkQueuePresentKHR_t)(VkQueue, const VkPresentInfoKHR*);
-static vkQueuePresentKHR_t o_vkQueuePresentKHR = nullptr;
-
-VkResult APIENTRY hk_vkQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR* pPresentInfo) {
-    // Хук для Vulkan
-    return o_vkQueuePresentKHR(queue, pPresentInfo);
 }
 
 // ==========================================
@@ -175,15 +159,6 @@ static bool HookOpenGL() {
     return false;
 }
 
-static bool HookVulkan() {
-    HMODULE hVK = GetModuleHandleA("vulkan-1.dll");
-    if (!hVK) return false;
-
-    // Для Vulkan нужно перехватывать vkGetDeviceProcAddr или vkQueuePresentKHR
-    g_vkHooked = true;
-    return true;
-}
-
 // ==========================================
 // Основные функции
 // ==========================================
@@ -212,9 +187,6 @@ bool NsLoad() {
             break;
         case RenderType::OpenGL:
             hookResult = HookOpenGL();
-            break;
-        case RenderType::Vulkan:
-            hookResult = HookVulkan();
             break;
         default:
             break;

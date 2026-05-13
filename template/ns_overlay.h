@@ -15,8 +15,7 @@ enum class RenderType {
     DirectX10,
     DirectX11,
     DirectX12,
-    OpenGL,
-    Vulkan
+    OpenGL
 };
 
 // Инициализация библиотеки (вызывается из DllMain)
