@@ -9,8 +9,11 @@ on:
 
 jobs:
   build-imgui-lib:
-    name: Build ImGui Static Library
+    name: Build ImGui Static Library (${{ matrix.arch }})
     runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [x86, x64]
     
     steps:
     - name: Checkout repository
@@ -19,37 +22,37 @@ jobs:
     - name: Setup MSVC
       uses: ilammy/msvc-dev-cmd@v1
       with:
-        arch: x64
+        arch: ${{ matrix.arch }}
         
     - name: Create build directory
       shell: cmd
-      run: mkdir build
+      run: mkdir build_${{ matrix.arch }}
       
     - name: Configure CMake
       shell: cmd
       run: |
-        cmake -B build ^
+        cmake -B build_${{ matrix.arch }} ^
           -S . ^
           -G "Visual Studio 17 2022" ^
-          -A x64 ^
+          -A ${{ matrix.arch == 'x64' && 'x64' || 'Win32' }} ^
           -DCMAKE_BUILD_TYPE=Release ^
           -DBUILD_SHARED_LIBS=OFF
           
     - name: Build ImGui Core
       shell: cmd
-      run: cmake --build build --config Release --target imgui
+      run: cmake --build build_${{ matrix.arch }} --config Release --target imgui
       
     - name: Build C API
       shell: cmd
       run: |
-        cl /c /O2 /I. /Ibackends c_api/imgui_c_api.cpp /Fobuild/imgui_c_api.obj
-        lib /OUT:build/imgui.lib build/imgui_c_api.obj
+        cl /c /O2 /I. /Ibackends c_api/imgui_c_api.cpp /Fobuild_${{ matrix.arch }}/imgui_c_api.obj
+        lib /OUT:build_${{ matrix.arch }}/imgui_${{ matrix.arch }}.lib build_${{ matrix.arch }}/imgui_c_api.obj
         
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: imgui-windows-static-lib
-        path: build/
+        name: imgui-windows-static-lib-${{ matrix.arch }}
+        path: build_${{ matrix.arch }}/
         retention-days: 1
 
   build-template-dll:
@@ -64,11 +67,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Download ImGui artifacts
+    - name: Download ImGui artifacts (x86)
       uses: actions/download-artifact@v4
       with:
-        name: imgui-windows-static-lib
-        path: lib
+        name: imgui-windows-static-lib-x86
+        path: lib/x86
+        
+    - name: Download ImGui artifacts (x64)
+      uses: actions/download-artifact@v4
+      with:
+        name: imgui-windows-static-lib-x64
+        path: lib/x64
         
     - name: Setup MSVC (${{ matrix.arch }})
       uses: ilammy/msvc-dev-cmd@v1
@@ -78,7 +87,7 @@ jobs:
     - name: Create build directory
       shell: cmd
       run: mkdir template_build
-      
+        
     - name: Configure CMake for Template
       shell: cmd
       run: |
@@ -87,7 +96,7 @@ jobs:
           -G "Visual Studio 17 2022" ^
           -A ${{ matrix.arch == 'x64' && 'x64' || 'Win32' }} ^
           -DCMAKE_BUILD_TYPE=Release ^
-          -DIMGUI_LIB_PATH=${{ github.workspace }}/lib/imgui.lib ^
+          -DIMGUI_LIB_PATH=${{ github.workspace }}/lib/${{ matrix.arch }}/imgui_${{ matrix.arch }}.lib ^
           -DBUILD_D3D9=ON ^
           -DBUILD_D3D10=ON ^
           -DBUILD_D3D11=ON ^
@@ -102,6 +111,9 @@ jobs:
       run: |
         mkdir -p template_release/bin/${{ matrix.arch }}
         cp template_build/Release/MyInjectLibrary.dll template_release/bin/${{ matrix.arch }}/
+        # Copy corresponding lib
+        mkdir -p template_release/lib/${{ matrix.arch }}
+        cp lib/${{ matrix.arch }}/imgui_${{ matrix.arch }}.lib template_release/lib/${{ matrix.arch }}/
         
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
@@ -115,7 +127,8 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          lib/imgui.lib
+          lib/x86/imgui_x86.lib
+          lib/x64/imgui_x64.lib
           c_api/imgui_c_api.h
           imgui.h
           imconfig.h
