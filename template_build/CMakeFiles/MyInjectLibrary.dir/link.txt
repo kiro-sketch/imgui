@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,-soname,libMyInjectLibrary.so -o lib/libMyInjectLibrary.so CMakeFiles/MyInjectLibrary.dir/dllmain.cpp.o CMakeFiles/MyInjectLibrary.dir/ns_overlay.cpp.o  -lwinmm -luser32 -lkernel32 -ld3d9 -ld3d10 -ld3d10_1 -ld3d11 -ld3d12 -ldxgi -lopengl32 
